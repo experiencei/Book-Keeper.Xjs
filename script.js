@@ -36,7 +36,26 @@ function validate(nameValue, urlValue) {
     return true;
   }
 
-function storeBookmark(e) {
+
+  // Fetch bookmarks
+function fetchBookmarks() {
+    // Get bookmarks from localStorage if available
+    if (localStorage.getItem('bookmarks')) {
+      bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+    } else {
+      // Create bookmarks array in localStorage
+      bookmarks = [
+        {
+          name: 'Jacinto Design',
+          url: 'http://jacinto.design',
+        },
+      ];
+      localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+    buildBookmarks();
+  }
+  
+  function storeBookmark(e) {
     e.preventDefault();
     const nameValue = websiteNameEl.value;
     let urlValue = websiteUrlEl.value;
@@ -48,6 +67,20 @@ function storeBookmark(e) {
     if (!validate(nameValue, urlValue)) {
       return false;
     }
-}
-
+    // Set bookmark object, add to array
+    const bookmark = {
+      name: nameValue,
+      url: urlValue,
+    };
+    bookmarks.push(bookmark);
+    // Set bookmarks in localStorage, fetch, reset input fields
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    fetchBookmarks();
+    bookmarkForm.reset();
+    websiteNameEl.focus();
+  }
+// Event Listener
 bookmarkForm.addEventListener('submit', storeBookmark);
+
+// On Load, Fetch Bookmarks
+fetchBookmarks();
